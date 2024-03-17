@@ -9,7 +9,8 @@ public class ButtonListener implements ActionListener{
 	String type;
 	
 	public ButtonListener(ChromosomeComponent component, String type) {
-		
+		f = new FileHelper(component);
+		this.type = type;
 	}
 	
 	@Override
