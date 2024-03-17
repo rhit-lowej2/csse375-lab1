@@ -61,7 +61,7 @@ public class ChromosomeViewer {
 		input.setText("1.0");
 		input.setToolTipText("Mutate Rate: N%");
 
-		LoadListener forced = new LoadListener(chromosomeComp);
+		ButtonListener forced = new ButtonListener(chromosomeComp, "Load");
 		load.addActionListener(forced);
 		forced.actionPerformed(null);
 		mutate.addActionListener((e) -> {
@@ -75,7 +75,7 @@ public class ChromosomeViewer {
 
 		chromosomeComp.addMouseListener(clicker);
 
-		save.addActionListener(new SaveListener(chromosomeComp));
+		save.addActionListener(new ButtonListener(chromosomeComp, "Save"));
 		alpha.setSize(501.0, 501.0);
 		frame.setSize(alpha);
 	}
