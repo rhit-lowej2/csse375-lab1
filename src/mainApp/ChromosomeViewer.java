@@ -26,6 +26,11 @@ import java.awt.event.MouseListener;
  *
  */
 public class ChromosomeViewer {
+	
+	public ChromosomeViewer() {
+		viewerMain();
+	}
+	
 	Dimension alpha = new Dimension();
 
 	JFrame frame;
@@ -83,8 +88,6 @@ public class ChromosomeViewer {
 	public static void main(String[] args) {
 
 		ChromosomeViewer viewer = new ChromosomeViewer();
-
-		viewer.viewerMain();
 
 	}
 

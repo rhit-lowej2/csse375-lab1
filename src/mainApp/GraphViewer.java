@@ -27,6 +27,10 @@ import java.awt.event.ActionListener;
  */
 
 public class GraphViewer {
+	
+	public GraphViewer() {
+		graphViewerMain();
+	}
 
     Dimension dimension = new Dimension();
     private double rate = 0.5;
@@ -66,17 +70,17 @@ public class GraphViewer {
             }
         });
 
-        t = new Timer(DELAY, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (currentGenerationIndex < genSize) {
-                    graphComp.drawGeneration(currentGenerationIndex);
-                    currentGenerationIndex++;
-                } else {
-                    t.stop();
-                }
-            }
-        });
+//        t = new Timer(DELAY, new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (currentGenerationIndex < genSize) {
+//                    graphComp.drawGeneration(currentGenerationIndex);
+//                    currentGenerationIndex++;
+//                } else {
+//                    t.stop();
+//                }
+//            }
+//        });
         //Start timer
 
         this.frame = new JFrame();
@@ -201,7 +205,6 @@ public class GraphViewer {
     
     public static void main(String[] args) {
         GraphViewer viewer = new GraphViewer();
-        viewer.graphViewerMain();
     }
     //Start the program
 }
