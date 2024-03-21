@@ -48,12 +48,14 @@ public class ChromosomeViewer {
 		JButton load = new JButton("Load");
 		JButton save = new JButton("Save");
 		JButton mutate = new JButton("Mutate");
+		JButton undo = new JButton("Undo");
 		JTextField input = new JTextField(5);
 		alpha.setSize(500.0, 500.0);
 		frame.setSize(alpha);
 		panel.add(load);
 		panel.add(save);
 		panel.add(mutate);
+		panel.add(undo);
 		panel.add(input);
 
 		frame.add(panel, BorderLayout.SOUTH);
@@ -70,6 +72,13 @@ public class ChromosomeViewer {
 			} catch (NumberFormatException broke) {
 				System.out.println("Error : please enter a double value");
 				broke.printStackTrace();
+			}
+		});
+		undo.addActionListener((e) -> {
+			try {
+				chromosomeComp.undo();
+			} catch (Exception ex) {
+				System.out.println("Error : couldn't undo");
 			}
 		});
 

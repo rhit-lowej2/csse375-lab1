@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.util.ArrayList;
+import java.util.*;
 
 import javax.swing.JComponent;
 
@@ -23,7 +23,8 @@ import javax.swing.JComponent;
 
 public class ChromosomeComponent extends JComponent {
 
-    private ArrayList<Chromosome> chromosomes = new ArrayList<Chromosome>();
+    private Stack<List<Chromosome>> history = new Stack<List<Chromosome>>();
+    private List<Chromosome> chromosomes = new ArrayList<Chromosome>();
     private String slime = "1000000001101111110110101101011010110101101011010110111111011011011101101111110110000000011111111111";
     private String smiley = "1000000001101111110110101101011010110101101011010110111111011010000101101111110110000000011111111111";
     private String grid = "1010101010010101010110101010100101010101101010101001010101011010101010010101010110101010100101010101";
@@ -194,6 +195,7 @@ public class ChromosomeComponent extends JComponent {
     //Sets file for milestone 1
 
     public void mutate(double rate) {
+        saveState();
         this.rate = rate / 100; // Turn rate to a percentage
         for (Chromosome chromosome : chromosomes) {
             double random = Math.random(); // Get random number 0-1
@@ -210,6 +212,17 @@ public class ChromosomeComponent extends JComponent {
         repaint();
     }
     //Mutates each chromosome at a given rate
+    public void saveState() {
+        ArrayList<Chromosome> copy = new ArrayList<>();
+        for (Chromosome c : chromosomes) {
+            copy.add(c.copy());
+        }
+        history.push(copy);
+    }
+    public void undo() {
+        chromosomes = history.pop();
+        repaint();
+    }
 
     public void singleChrom() {
         for (int i = 0; i < 20; i++) {
