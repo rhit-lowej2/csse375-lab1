@@ -195,9 +195,9 @@ public class Generation {
             chromosomeList.get(i).setGeneration(origGenes, i, fitnessMethod);
         }
         for (int k = (int) elitism; k <= popSize; k++) {
-        	if(k<=90 && rankTopIndex < 10) {
+        	if(k >= 30 && k<=90 && rankTopIndex < 10) {
         		rankTopIndex = 10;
-        	}else if(k < 100 && k > 90 && rankTopIndex < 40){
+        	}else if(k >= 30 && k < 100 && k > 90 && rankTopIndex < 40){
         		rankTopIndex = 40;
         	}
         	mutateChromosome(survivors, topTier, k, rankTopIndex);
