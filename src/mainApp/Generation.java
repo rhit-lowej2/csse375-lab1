@@ -182,6 +182,7 @@ public class Generation {
         this.terminateMe = true;
     }
 
+    
     public void rankingReproduce(ChromosomeComponent[] survivors) {
         calcBest();
         ChromosomeComponent topTier = new ChromosomeComponent();
@@ -193,68 +194,33 @@ public class Generation {
             origGenes = keyChrom.getGenes();
             chromosomeList.get(i).setGeneration(origGenes, i, fitnessMethod);
         }
-        for (int k = (int) elitism; k <= popSize;) {
-            while (k < 30) {
-                ChromosomeComponent keyChrom = survivors[rankTopIndex];
-                chromosomeList.add(new ChromosomeComponent());
-                topTier.add(keyChrom);
-                origGenes = keyChrom.getGenes();
-                chromosomeList.get(k).setGeneration(origGenes, k, fitnessMethod);
-                double actual = (double) k / popSize;
-                if (actual > elitism / 100.0) {
-                    chromosomeList.get(k).mutate(rate);
-                }
-                k++;
-                if (rankTopIndex != 9) {
-                    rankTopIndex++;
-                } else {
-                    rankTopIndex = 0;
-                }
-            }
-            while (k <= 90) {
-                if (rankTopIndex < 10) {
-                    rankTopIndex = 10;
-                }
-                ChromosomeComponent keyChrom = survivors[rankTopIndex];
-                chromosomeList.add(new ChromosomeComponent());
-                topTier.add(keyChrom);
-                origGenes = keyChrom.getGenes();
-                chromosomeList.get(k).setGeneration(origGenes, k, fitnessMethod);
-                double actual = (double) k / popSize;
-                if (actual > elitism / 100.0) {
-                    chromosomeList.get(k).mutate(rate);
-                }
-                k++;
-                if (rankTopIndex != 40) {
-                    rankTopIndex++;
-                } else {
-                    rankTopIndex = 10;
-                }
-            }
-            while (k < 100) {
-                if (rankTopIndex < 40) {
-                    rankTopIndex = 40;
-                }
-                ChromosomeComponent keyChrom = survivors[rankTopIndex];
-                chromosomeList.add(new ChromosomeComponent());
-                topTier.add(keyChrom);
-                origGenes = keyChrom.getGenes();
-                chromosomeList.get(k).setGeneration(origGenes, k, fitnessMethod);
-                double actual = (double) k / popSize;
-                if (actual > elitism / 100.0) {
-                    chromosomeList.get(k).mutate(rate);
-                }
-                k++;
-                if (rankTopIndex != 50) {
-                    rankTopIndex++;
-                } else {
-                    rankTopIndex = 40;
-                }
-            }
-            k++;
+        for (int k = (int) elitism; k <= popSize; k++) {
+        	if(k<=90 && rankTopIndex < 10) {
+        		rankTopIndex = 10;
+        	}else if(k < 100 && k > 90 && rankTopIndex < 40){
+        		rankTopIndex = 40;
+        	}
+        	mutateChromosome(survivors, topTier, k, rankTopIndex);
+        	if((k < 30 && rankTopIndex != 9) || (30 <= k && k <= 90 && rankTopIndex != 40) || (k > 90 && k < 100 && rankTopIndex != 50)) {
+        		rankTopIndex++;
+        	}else {
+        		rankTopIndex = 0;
+        	}
         }
     }
     //Method used for ranking selection
+    
+    public void mutateChromosome(ChromosomeComponent[] survivors, ChromosomeComponent topTier, int k, int rankTopIndex) {
+    	ChromosomeComponent keyChrom = survivors[rankTopIndex];
+        chromosomeList.add(new ChromosomeComponent());
+        topTier.add(keyChrom);
+        origGenes = keyChrom.getGenes();
+        chromosomeList.get(k).setGeneration(origGenes, k, fitnessMethod);
+        double actual = (double) k / popSize;
+        if (actual > elitism / 100.0) {
+            chromosomeList.get(k).mutate(rate);
+        }
+    }
 
     public int[] get1s() {
         int[] output = new int[chromosomeList.size()];

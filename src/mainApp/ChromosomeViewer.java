@@ -45,7 +45,7 @@ public class ChromosomeViewer {
 
 		MouseListener clicker = new ClickListener(chromosomeComp);
 		frame.setSize(FRAMESIZE);
-		frame.setTitle("Title");
+		frame.setTitle("Chromosome");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.add(chromosomeComp);
