@@ -27,6 +27,10 @@ import java.awt.event.ActionListener;
  */
 
 public class GraphViewer {
+	
+	public GraphViewer() {
+		graphViewerMain();
+	}
 
     Dimension dimension = new Dimension();
     private double rate = 0.5;
@@ -47,7 +51,8 @@ public class GraphViewer {
     private String fitnessMethod = "Smiley";
     JFrame frame;
     JFrame genFrame;
-
+    JPanel panel = new JPanel();
+    
     private void graphViewerMain() {
 
         this.t = new Timer(DELAY, new ActionListener() {
@@ -65,20 +70,19 @@ public class GraphViewer {
             }
         });
 
-        t = new Timer(DELAY, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (currentGenerationIndex < genSize) {
-                    graphComp.drawGeneration(currentGenerationIndex);
-                    currentGenerationIndex++;
-                } else {
-                    t.stop();
-                }
-            }
-        });
+//        t = new Timer(DELAY, new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (currentGenerationIndex < genSize) {
+//                    graphComp.drawGeneration(currentGenerationIndex);
+//                    currentGenerationIndex++;
+//                } else {
+//                    t.stop();
+//                }
+//            }
+//        });
         //Start timer
 
-        JPanel panel = new JPanel();
         this.frame = new JFrame();
         this.genFrame = new JFrame();
         this.start = new JButton("Start");
@@ -97,21 +101,13 @@ public class GraphViewer {
         frame.add(graphComp);
         frame.add(panel, BorderLayout.SOUTH);
 
-        JLabel elite = new JLabel("Elitism%");
-        JTextField eliteRate = new JTextField(3);
-        eliteRate.setText("1");
+        JTextField eliteRate = makeLabel("Elitism%", 3, "1");
 
-        JLabel rateLabel = new JLabel("Mutate rate: ");
-        JTextField rate = new JTextField(5);
-        rate.setText("1");
+        JTextField rate = makeLabel("Mutate rate: ", 5, "1");
 
-        JLabel popLabel = new JLabel("Population Size: ");
-        JTextField popSize = new JTextField(5);
-        popSize.setText("100");
+        JTextField popSize = makeLabel("Population Size: ", 5, "100");
 
-        JLabel genLabel = new JLabel("Generations: ");
-        JTextField genSize = new JTextField(5);
-        genSize.setText("150");
+        JTextField genSize = makeLabel("Generations: ", 5, "150");
 
         JButton clear = new JButton("Clear");
         this.t = new Timer(DELAY, new ActionListener() {
@@ -131,15 +127,7 @@ public class GraphViewer {
         panel.add(start);
         panel.add(close);
         panel.add(clear);
-        panel.add(rateLabel);
-        panel.add(rate);
-        panel.add(popLabel);
-        panel.add(popSize);
         panel.add(dropdown);
-        panel.add(genLabel);
-        panel.add(genSize);
-        panel.add(elite);
-        panel.add(eliteRate);
         panel.add(crossover);
         panel.add(terminate);
         panel.add(fitDrop);
@@ -206,9 +194,17 @@ public class GraphViewer {
 
     }
 
+    public JTextField makeLabel(String labelText, int textFieldNum, String text) {
+        JLabel label = new JLabel(labelText);
+        JTextField textField = new JTextField(textFieldNum);
+        textField.setText(text);
+        panel.add(label);
+        panel.add(textField);
+        return textField;
+    }
+    
     public static void main(String[] args) {
         GraphViewer viewer = new GraphViewer();
-        viewer.graphViewerMain();
     }
     //Start the program
 }

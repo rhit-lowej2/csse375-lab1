@@ -26,6 +26,11 @@ import java.awt.event.MouseListener;
  *
  */
 public class ChromosomeViewer {
+	
+	public ChromosomeViewer() {
+		viewerMain();
+	}
+	
 	Dimension alpha = new Dimension();
 
 	JFrame frame;
@@ -40,7 +45,7 @@ public class ChromosomeViewer {
 
 		MouseListener clicker = new ClickListener(chromosomeComp);
 		frame.setSize(FRAMESIZE);
-		frame.setTitle("Title");
+		frame.setTitle("Chromosome");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.add(chromosomeComp);
@@ -61,7 +66,7 @@ public class ChromosomeViewer {
 		input.setText("1.0");
 		input.setToolTipText("Mutate Rate: N%");
 
-		LoadListener forced = new LoadListener(chromosomeComp);
+		ButtonListener forced = new ButtonListener(chromosomeComp, "Load");
 		load.addActionListener(forced);
 		forced.actionPerformed(null);
 		mutate.addActionListener((e) -> {
@@ -75,7 +80,7 @@ public class ChromosomeViewer {
 
 		chromosomeComp.addMouseListener(clicker);
 
-		save.addActionListener(new SaveListener(chromosomeComp));
+		save.addActionListener(new ButtonListener(chromosomeComp, "Save"));
 		alpha.setSize(501.0, 501.0);
 		frame.setSize(alpha);
 	}
@@ -83,8 +88,6 @@ public class ChromosomeViewer {
 	public static void main(String[] args) {
 
 		ChromosomeViewer viewer = new ChromosomeViewer();
-
-		viewer.viewerMain();
 
 	}
 
