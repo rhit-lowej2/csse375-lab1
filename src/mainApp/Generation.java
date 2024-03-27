@@ -36,7 +36,9 @@ public class Generation {
     private String selection;
     private boolean terminateMe = false;
     private String fitnessMethod;
-
+    ChromosomeComponent topTier;
+    int rankTopIndex = 0;
+    
     public Generation(ChromosomeComponent[] survivors, double rate, int popSize, String selection, double elitism,
             String fitnessMethod) {
         this.rate = rate;
@@ -185,8 +187,8 @@ public class Generation {
     
     public void rankingReproduce(ChromosomeComponent[] survivors) {
         calcBest();
-        ChromosomeComponent topTier = new ChromosomeComponent();
-        int rankTopIndex = 0;
+        topTier = new ChromosomeComponent();
+        rankTopIndex = 0;
         for (int i = 0; i < elitism && i < 50; i++) {
             ChromosomeComponent keyChrom = survivors[i];
             chromosomeList.add(new ChromosomeComponent());
@@ -200,7 +202,7 @@ public class Generation {
         	}else if(k >= 30 && k < 100 && k > 90 && rankTopIndex < 40){
         		rankTopIndex = 40;
         	}
-        	mutateChromosome(survivors, topTier, k, rankTopIndex);
+        	mutateChromosome(survivors, k);
         	if((k < 30 && rankTopIndex != 9) || (30 <= k && k <= 90 && rankTopIndex != 40) || (k > 90 && k < 100 && rankTopIndex != 50)) {
         		rankTopIndex++;
         	}else {
@@ -210,7 +212,7 @@ public class Generation {
     }
     //Method used for ranking selection
     
-    public void mutateChromosome(ChromosomeComponent[] survivors, ChromosomeComponent topTier, int k, int rankTopIndex) {
+    public void mutateChromosome(ChromosomeComponent[] survivors, int k) {
     	ChromosomeComponent keyChrom = survivors[rankTopIndex];
         chromosomeList.add(new ChromosomeComponent());
         topTier.add(keyChrom);
