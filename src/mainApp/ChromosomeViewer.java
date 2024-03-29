@@ -100,7 +100,7 @@ public class ChromosomeViewer {
 
 	}
 
-	private static final int DELAY = 50;
+	private  int DELAY = 50;
 	Timer t = new Timer(DELAY, new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {

@@ -41,14 +41,16 @@ public class GraphViewer {
 
     private Timer t;
     private boolean progRunning = false;
-    private static final int DELAY = 5;
+    private  int DELAY = 5;
 
     private int currentGenerationIndex = 0;
 
     private GraphComponent graphComp = new GraphComponent();
     private GenerationComponent genComp = new GenerationComponent();
     private String currSelection = "truncation";
-    private String fitnessMethod = "Smiley";
+    private Clock clock = new Clock();
+    private FitnessMethodFactory factory = new FitnessMethodFactory();
+    private FitnessMethod fitnessMethod = factory.getFitnessMethod("Smiley");
     JFrame frame;
     JFrame genFrame;
     JPanel panel = new JPanel();
@@ -142,7 +144,8 @@ public class GraphViewer {
                 this.rate = Double.parseDouble(rate.getText());
                 this.popSize = Integer.parseInt(popSize.getText());
                 this.genSize = Integer.parseInt(genSize.getText());
-                this.fitnessMethod = "" + fitDrop.getSelectedItem();
+                this.fitnessMethod = factory.getFitnessMethod("" + fitDrop.getSelectedItem());
+                this.fitnessMethod.setClock(clock);
 
                 if (this.genSize < 10) {
                     throw new IllegalArgumentException("Please enter 10 or more generations");
@@ -179,7 +182,9 @@ public class GraphViewer {
                             Double.parseDouble(eliteRate.getText()), fitnessMethod);
                 } else if (this.currSelection.charAt(0) == 'M') {
                     System.out.println(currSelection);
-                    graphComp.dancingQueen(this.popSize, this.genSize, "d");
+                    StringCompareFitnessMethod debug = new StringCompareFitnessMethod(FitnessMethod.GREEN);
+                    debug.setDebug(true);
+                    graphComp.dancingQueen(this.popSize, this.genSize, debug);
                 }
                 graphComp.nextGen();
                 t.start();

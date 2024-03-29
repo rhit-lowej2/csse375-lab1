@@ -21,10 +21,9 @@ import java.util.ArrayList;
 public class Generation {
 
     ArrayList<ChromosomeComponent> chromosomeList;
-    ArrayList<ChromosomeComponent> newChroms;
-    ChromosomeComponent[] topHalf = new ChromosomeComponent[100];
-    ChromosomeComponent best;
-    ChromosomeComponent currBest;
+    private ChromosomeComponent[] topHalf = new ChromosomeComponent[100];
+    private ChromosomeComponent best;
+    private ChromosomeComponent currBest;
     private int[] origGenes;
     private double spotOnWheel = 0;
     private ChromosomeComponent[] currReproduce;
@@ -35,12 +34,12 @@ public class Generation {
     private double elitism;
     private String selection;
     private boolean terminateMe = false;
-    private String fitnessMethod;
+    private FitnessMethod fitnessMethod;
     ChromosomeComponent topTier;
     int rankTopIndex = 0;
     
     public Generation(ChromosomeComponent[] survivors, double rate, int popSize, String selection, double elitism,
-            String fitnessMethod) {
+            FitnessMethod fitnessMethod) {
         this.rate = rate;
         this.selection = selection;
         this.popSize = popSize;
@@ -128,7 +127,7 @@ public class Generation {
 
     public void newRoulette(ChromosomeComponent[] allChromosomes) {
         for (ChromosomeComponent c : allChromosomes) {
-            totalWheel += c.calcTotFitness(fitnessMethod);
+            totalWheel += c.calcTotalFitness(fitnessMethod);
         }
 
         for (int i = 0; i < popSize; i++) {
@@ -138,11 +137,11 @@ public class Generation {
             }
             for (ChromosomeComponent c : allChromosomes) {
                 double rouletteResult = Math.random();
-                if ((c.calcTotFitness(fitnessMethod)) / totalWheel + spotOnWheel >= rouletteResult) {
+                if ((c.calcTotalFitness(fitnessMethod)) / totalWheel + spotOnWheel >= rouletteResult) {
                     currReproduce[i] = c;
                     break;
                 }
-                spotOnWheel += (c.calcTotFitness(fitnessMethod)) / totalWheel;
+                spotOnWheel += (c.calcTotalFitness(fitnessMethod)) / totalWheel;
             }
             origGenes = currReproduce[i].getGenes();
             chromosomeList.get(i).setGeneration(origGenes, i, fitnessMethod);
@@ -152,7 +151,7 @@ public class Generation {
 
     public void rouletteWheelReproduce(ChromosomeComponent[] allChromosomes) {
         for (ChromosomeComponent c : allChromosomes) {
-            totalWheel += c.calcTotFitness(fitnessMethod);
+            totalWheel += c.calcTotalFitness(fitnessMethod);
         }
 
         for (int i = 0; i < popSize; i++) {
@@ -164,7 +163,7 @@ public class Generation {
             }
             for (ChromosomeComponent c : allChromosomes) {
                 double spin = Math.random();
-                if ((c.calcTotFitness(fitnessMethod)) / totalWheel + spotOnWheel >= spin) {
+                if ((c.calcTotalFitness(fitnessMethod)) / totalWheel + spotOnWheel >= spin) {
                     currReproduce[i] = c;
                     double actual = (double) i / popSize;
                     if (actual > elitism / 100) {
@@ -172,7 +171,7 @@ public class Generation {
                     }
                     break;
                 }
-                spotOnWheel += (c.calcTotFitness(fitnessMethod)) / totalWheel;
+                spotOnWheel += (c.calcTotalFitness(fitnessMethod)) / totalWheel;
             }
             origGenes = currReproduce[i].getGenes();
             chromosomeList.get(i).setGeneration(origGenes, i, fitnessMethod);
@@ -248,12 +247,24 @@ public class Generation {
         }
         return output;
     }
+
+    public GenerationInfo getInfo() {
+        int[] zeros = new int[chromosomeList.size()];
+        int[] ones = new int[chromosomeList.size()];
+        int[] twos = new int[chromosomeList.size()];
+        for (int i = 0; i < chromosomeList.size(); i++) {
+            zeros[i] = chromosomeList.get(i).calc0s();
+            ones[i] = chromosomeList.get(i).calc1s();
+            twos[i] = chromosomeList.get(i).calc2s();
+        }
+        return new GenerationInfo(zeros, ones, twos);
+    }
 //Used to get all of the ? values from the milestone 4 chromosomeList
     public int getBestFit() {
         int best = -1;
         for (int i = 0; i < chromosomeList.size(); i++) {
-            if (chromosomeList.get(i).calcTotFitness(fitnessMethod) > best) {
-                best = chromosomeList.get(i).calcTotFitness(fitnessMethod);
+            if (chromosomeList.get(i).calcTotalFitness(fitnessMethod) > best) {
+                best = chromosomeList.get(i).calcTotalFitness(fitnessMethod);
             }
         }
         return best;
@@ -263,7 +274,7 @@ public class Generation {
     public double getAverageFit() {
         double total = 0;
         for (ChromosomeComponent chromosome : chromosomeList) {
-            total += chromosome.calcTotFitness(fitnessMethod);
+            total += chromosome.calcTotalFitness(fitnessMethod);
         }
         return total / chromosomeList.size();
     }
@@ -272,8 +283,8 @@ public class Generation {
     public int getWorstFit() {
         int worst = 100;
         for (int i = 0; i < chromosomeList.size(); i++) {
-            if (chromosomeList.get(i).calcTotFitness(fitnessMethod) < worst) {
-                worst = chromosomeList.get(i).calcTotFitness(fitnessMethod);
+            if (chromosomeList.get(i).calcTotalFitness(fitnessMethod) < worst) {
+                worst = chromosomeList.get(i).calcTotalFitness(fitnessMethod);
             }
         }
         return worst;
@@ -298,7 +309,7 @@ public class Generation {
     public void drawOn(Graphics g) {
         for (ChromosomeComponent chromosomes : chromosomeList) {
             chromosomes.paintComponent(g);
-            if (topHalf[0].calcTotFitness(fitnessMethod) == 100 && terminateMe) {
+            if (topHalf[0].calcTotalFitness(fitnessMethod) == 100 && terminateMe) {
                 chromosomes.paintComponent(g);
                 break;
             }
@@ -318,8 +329,8 @@ public class Generation {
         for (int k = 0; k < chromosomeList.size() / 2; k++) {
             int max = -1;
             for (int i = 0; i < removeList.size(); i++) {
-                if (removeList.get(i).calcTotFitness(fitnessMethod) > max) { // Finding current greatest fit
-                    max = removeList.get(i).calcTotFitness(fitnessMethod);
+                if (removeList.get(i).calcTotalFitness(fitnessMethod) > max) { // Finding current greatest fit
+                    max = removeList.get(i).calcTotalFitness(fitnessMethod);
                     best = removeList.get(i);
                 }
             }
@@ -346,8 +357,8 @@ public class Generation {
         for (int i = 0; i < chromosomeList.size(); i++) {
             int max = -1;
             for (int j = 0; j < removeMe.size(); j++) {
-                if (removeMe.get(j).calcTotFitness(fitnessMethod) > max) {
-                    max = removeMe.get(j).calcTotFitness(fitnessMethod);
+                if (removeMe.get(j).calcTotalFitness(fitnessMethod) > max) {
+                    max = removeMe.get(j).calcTotalFitness(fitnessMethod);
                     currBest = removeMe.get(j);
                 }
             }

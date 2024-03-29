@@ -38,7 +38,7 @@ public class GenerationComponent extends JComponent {
     private boolean onlyTop = false;
     private int popSize = 100;
     private boolean crossing;
-    private String fitnessMethod = "Smiley";
+    private FitnessMethod fitnessMethod = new StringCompareFitnessMethod("Smiley");
 
     public void drawGeneration(int currentGenerationIndex) {
         if (currentGenerationIndex < generations.size()) {
@@ -64,7 +64,7 @@ public class GenerationComponent extends JComponent {
     }
     //Tells the program to terminate at 100
 
-    public void randomize(double rate, String method, int genSize, int popSize, double elitism, String fitnessMethod) {
+    public void randomize(double rate, String method, int genSize, int popSize, double elitism, FitnessMethod fitnessMethod) {
         this.elitism = elitism;
         this.method = method;
         this.rate = rate;
