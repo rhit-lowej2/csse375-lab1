@@ -22,17 +22,13 @@ public class GraphComponent extends JComponent {
 
     private ArrayList<Generation> generations = new ArrayList<Generation>();
     private ChromosomeComponent[] survivors;
-    private double rate;
-    private int popSize;
     private int genSize;
     private static int DELAY = 20;
     private Timer t;
     private static int genIndex = 0;
     private boolean isDrawing = true;
     private String method = "t";
-    private double elitism = 0;
     private boolean crossMe = false;
-    private String fitMethod = "Smiley";
     private boolean endMax = false;
 
     private static final Color COLOR_BEST = Color.GREEN;
@@ -49,10 +45,7 @@ public class GraphComponent extends JComponent {
     //Tell the component whether it is currently drawing itself or not
 
     public void compProp(double rate, int popSize, int genSize, String fitMethod) {
-        this.rate = rate;
-        this.popSize = popSize;
         this.genSize = genSize;
-        this.fitMethod = fitMethod;
     }
     //Set basic instance variables
 
@@ -129,6 +122,7 @@ public class GraphComponent extends JComponent {
 
 
     private void drawNums(Graphics g2, int index) {
+    	int popSize = generations.get(generations.size()-1).getPopSize();
         g2.setColor(Color.BLACK);
         int x1 = calcX(index);
         int x2 = calcX(index - 1);
@@ -293,59 +287,13 @@ public class GraphComponent extends JComponent {
     }
     //Tells the program to terminate at 100
 
-    public void dancingQueen(int popSize, int genSize, String fitMethod) {
-        this.fitMethod = fitMethod;
-        this.elitism = 0;
-        this.rate = 0;
-        this.method = "d";
-        this.popSize = popSize;
-        this.genSize = genSize;
-        Generation first = new Generation(null, rate, popSize, "d", elitism, fitMethod);
-        generations.add(first);
-        repaint();
+    public void addGeneration(Generation g, int genSize) {
+    	this.genSize = genSize;
+    	this.method = g.getSelection();
+    	generations.add(g);
+    	repaint();
     }
-    // Used for milestone 4, creates first generation and sets some parameters
-
-    public void randomize(double mutateRate, int popSize, int genSize, double elitism, String fitMethod) {
-        this.fitMethod = fitMethod;
-        this.elitism = elitism;
-        this.rate = mutateRate;
-        this.popSize = popSize;
-        this.genSize = genSize;
-
-        generations.clear();
-        Generation first = new Generation(null, rate, popSize, "t", elitism,
-                fitMethod);
-        generations.add(first);
-        repaint();
-    }
-    //Used for truncation, creates first generation and sets some parameters
-
-    public void roulette(double mutateRate, int popSize, int genSize, double elitism, String fitMethod) {
-        this.fitMethod = fitMethod;
-        this.elitism = elitism;
-        this.method = "ro";
-        this.rate = mutateRate;
-        this.popSize = popSize;
-        this.genSize = genSize;
-        Generation first = new Generation(null, rate, popSize, "ro", elitism, fitMethod);
-        generations.add(first);
-        repaint();
-    }
-    //Used for roulette wheel, creates first generation and sets some parameters
-
-    public void ranking(double mutateRate, int popSize, int genSize, double elitism, String fitMethod) {
-        this.fitMethod = fitMethod;
-        this.elitism = elitism;
-        this.method = "la";
-        this.rate = mutateRate;
-        this.popSize = popSize;
-        this.genSize = genSize;
-        Generation firstOne = new Generation(null, rate, popSize, "la", elitism, fitMethod);
-        generations.add(firstOne);
-        repaint();
-    }
-    //Used for ranking selection, creates first generation and sets some parameters
+    
     public void nextGen() {
 
         for (int i = 1; i < genSize; i++) {
@@ -354,8 +302,9 @@ public class GraphComponent extends JComponent {
             } else {
                 survivors = generations.get(i - 1).allOrdered();
             }
-            Generation newGen = new Generation(survivors, rate, popSize, this.method,
-                    elitism, fitMethod);
+            Generation lastGen = generations.get(generations.size()-1);
+            Generation newGen = new Generation(survivors, lastGen.getRate(), lastGen.getPopSize(), this.method,
+                    lastGen.getElitism(), lastGen.getFitMethod());
             generations.add(newGen);
             if (crossMe == true) {
                 int total = 0;
