@@ -28,16 +28,16 @@ import javax.swing.JComponent;
 
 public class GenerationComponent extends JComponent {
 
-    private ArrayList<Generation> generations = new ArrayList<Generation>();
-    private ChromosomeComponent[] survivors;
-    private double rate;
-    private String method = "t";
-    private double elitism;
-    private int genSize;
+    protected ArrayList<Generation> generations = new ArrayList<Generation>();
+    protected ChromosomeComponent[] survivors;
+    protected double rate;
+    protected String method = "t";
+    protected double elitism;
+    protected int genSize;
     private boolean isMax = false;
     private boolean onlyTop = false;
-    private int popSize = 100;
-    private boolean crossing;
+    protected int popSize = 100;
+    protected boolean crossing;
     private FitnessMethod fitnessMethod = new StringCompareFitnessMethod("Smiley");
 
     public void drawGeneration(int currentGenerationIndex) {

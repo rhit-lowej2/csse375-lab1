@@ -28,11 +28,6 @@ public class Generation {
     private double spotOnWheel = 0;
     private ChromosomeComponent[] currReproduce;
     private double totalWheel;
-//    private double rate;
-//    private int popSize;
-//    private int geneSize;
-//    private double elitism;
-//    private String selection;
     private GenParams params;
     private boolean terminateMe = false;
     private FitnessMethod fitnessMethod;
@@ -43,6 +38,7 @@ public class Generation {
         this.origGenes = new int[params.geneSize];
         this.currReproduce = new ChromosomeComponent[params.popSize];
         this.fitnessMethod = fitnessMethod;
+        this.chromosomeList = new ArrayList<ChromosomeComponent>();
         if (survivors == null) {
             if (params.selection.equals("d")) {
                 for (int i = 0; i < params.popSize; i++) {
@@ -93,11 +89,15 @@ public class Generation {
                     newRoulette(survivors);
                     return;
                 default:
-                    if (params.selection.charAt(0) == 'l') {
+                    if (params.selection.length() >= 1 && params.selection.charAt(0) == 'l') {
                         rankingReproduce(survivors);
                     }
+                    else {
+                        for (ChromosomeComponent c : survivors) {
+                            chromosomeList.add(c);
+                        }
+                    }
             }
-
             topHalf = new ChromosomeComponent[chromosomeList.size() / 2];
             calcBest();
         }
