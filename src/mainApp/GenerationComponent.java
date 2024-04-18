@@ -71,7 +71,7 @@ public class GenerationComponent extends JComponent {
         this.genSize = genSize;
         this.popSize = popSize;
         this.fitnessMethod = fitnessMethod;
-        Generation first = new Generation(null, rate, popSize, method, elitism, fitnessMethod);
+        Generation first = new Generation(null, new GenParams(rate, popSize, method, elitism), fitnessMethod);
         generations.add(first);
         first.drawOn(getGraphics());
         nextGen();
@@ -90,7 +90,7 @@ public class GenerationComponent extends JComponent {
             } else {
                 survivors = generations.get(i - 1).allOrdered();
             }
-            Generation newGen = new Generation(survivors, rate, popSize, this.method, elitism, fitnessMethod);
+            Generation newGen = new Generation(survivors, new GenParams(rate, popSize, method, elitism), fitnessMethod);
             generations.add(newGen);
             if (crossing == true) {
                 generations.get(i).cross();

@@ -300,7 +300,7 @@ public class GraphComponent extends JComponent {
         this.method = "d";
         this.popSize = popSize;
         this.genSize = genSize;
-        Generation first = new Generation(null, rate, popSize, "d", elitism, fitMethod);
+        Generation first = new Generation(null, new GenParams(rate, popSize, method, elitism), fitMethod);
         generations.add(first);
         repaint();
     }
@@ -314,8 +314,7 @@ public class GraphComponent extends JComponent {
         this.genSize = genSize;
 
         generations.clear();
-        Generation first = new Generation(null, rate, popSize, "t", elitism,
-                fitMethod);
+        Generation first = new Generation(null, new GenParams(rate, popSize, method, elitism), fitMethod);
         generations.add(first);
         repaint();
     }
@@ -328,7 +327,7 @@ public class GraphComponent extends JComponent {
         this.rate = mutateRate;
         this.popSize = popSize;
         this.genSize = genSize;
-        Generation first = new Generation(null, rate, popSize, "ro", elitism, fitMethod);
+        Generation first = new Generation(null, new GenParams(rate, popSize, method, elitism), fitMethod);
         generations.add(first);
         repaint();
     }
@@ -341,7 +340,7 @@ public class GraphComponent extends JComponent {
         this.rate = mutateRate;
         this.popSize = popSize;
         this.genSize = genSize;
-        Generation firstOne = new Generation(null, rate, popSize, "la", elitism, fitMethod);
+        Generation firstOne = new Generation(null, new GenParams(rate, popSize, method, elitism), fitMethod);
         generations.add(firstOne);
         repaint();
     }
@@ -354,8 +353,7 @@ public class GraphComponent extends JComponent {
             } else {
                 survivors = generations.get(i - 1).allOrdered();
             }
-            Generation newGen = new Generation(survivors, rate, popSize, this.method,
-                    elitism, fitMethod);
+            Generation newGen = new Generation(survivors, new GenParams(rate, popSize, this.method, elitism), fitMethod);
             generations.add(newGen);
             if (crossMe == true) {
                 int total = 0;

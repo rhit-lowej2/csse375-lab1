@@ -14,7 +14,7 @@ public class Testing {
 		for(int i = 0; i < 100; i++) {
 			survivors[i] = new ChromosomeComponent();
 		}
-		Generation g = new Generation(survivors, 0, 0, "la", 0, new StringCompareFitnessMethod("Smiley"));
+		Generation g = new Generation(survivors, new GenParams(0, 0, "la", 0), new StringCompareFitnessMethod("Smiley"));
 		ChromosomeComponent[] survivors1 = new ChromosomeComponent[100];
 		for(int i = 0; i < 100; i++) {
 			survivors1[i] = new ChromosomeComponent();
@@ -44,5 +44,10 @@ public class Testing {
 		for (Chromosome c: chromosomes) {
 			assertEquals(c.getNum(), 1);
 		}
+	}
+
+	@Test
+	public void testFakeFitness() {
+
 	}
 }
