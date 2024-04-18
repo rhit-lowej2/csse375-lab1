@@ -193,10 +193,9 @@ public class ChromosomeComponent extends JComponent {
     }
     //Sets file for milestone 1
 
-    public void mutate(double rate) {
+    public void mutate(double rate, double random) {
         this.rate = rate / 100; // Turn rate to a percentage
         for (Chromosome chromosome : chromosomes) {
-            double random = Math.random(); // Get random number 0-1
             if (random < this.rate) { // If the mutate rate is higher than the random number, switch gene
                 if (chromosome.getNum() == 1) {
                     chromosome.color = Color.BLACK;

@@ -71,7 +71,7 @@ public class ChromosomeViewer {
 		forced.actionPerformed(null);
 		mutate.addActionListener((e) -> {
 			try {
-				chromosomeComp.mutate(Double.parseDouble(input.getText()));
+				chromosomeComp.mutate(Double.parseDouble(input.getText()), Math.random());
 			} catch (NumberFormatException broke) {
 				System.out.println("Error : please enter a double value");
 				broke.printStackTrace();

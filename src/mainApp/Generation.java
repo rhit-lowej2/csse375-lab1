@@ -39,6 +39,23 @@ public class Generation {
     ChromosomeComponent topTier;
     int rankTopIndex = 0;
     
+    //Getters
+    public double getRate() {
+    	return rate;
+    }
+    public int getPopSize() {
+    	return popSize;
+    }
+    public double getElitism() {
+    	return elitism;
+    }
+    public String getFitMethod() {
+    	return fitnessMethod;
+    }
+    public String getSelection() {
+    	return selection;
+    }
+    
     public Generation(ChromosomeComponent[] survivors, double rate, int popSize, String selection, double elitism,
             String fitnessMethod) {
         this.rate = rate;
@@ -75,7 +92,7 @@ public class Generation {
             } else if (this.selection.equals("la") || this.selection.charAt(0) == 'l') {
                 rankingReproduce(survivors);
             } else if (selection.equals("ro")) {
-                rouletteWheelReproduce(survivors);
+                rouletteWheelReproduce(survivors, Math.random());
             }
             topHalf = new ChromosomeComponent[chromosomeList.size() / 2];
             calcBest();
@@ -110,7 +127,7 @@ public class Generation {
             if (rate != 100) {
                 double actual = (double) i / popSize;
                 if (actual > elitism / 100) {
-                    survivors[i % (popSize / 2)].mutate(rate);
+                    survivors[i % (popSize / 2)].mutate(rate, Math.random());
                 }
             }
             origGenes = survivors[i % (popSize / 2)].getGenes();
@@ -118,7 +135,7 @@ public class Generation {
 
             double actual = (double) i / popSize;
             if (actual > elitism / 100) {
-                survivors[i % popSize / 2].mutate(rate);
+                survivors[i % popSize / 2].mutate(rate, Math.random());
             }
             origGenes = survivors[i % popSize / 2].getGenes();
             chromosomeList.get(i).setGeneration(origGenes, i, fitnessMethod);
@@ -150,7 +167,7 @@ public class Generation {
     }
     //Roulette wheel used for milestone 4
 
-    public void rouletteWheelReproduce(ChromosomeComponent[] allChromosomes) {
+    public void rouletteWheelReproduce(ChromosomeComponent[] allChromosomes, double spin) {
         for (ChromosomeComponent c : allChromosomes) {
             totalWheel += c.calcTotFitness(fitnessMethod);
         }
@@ -163,12 +180,11 @@ public class Generation {
                 currReproduce[k % popSize / 2] = allChromosomes[k];
             }
             for (ChromosomeComponent c : allChromosomes) {
-                double spin = Math.random();
                 if ((c.calcTotFitness(fitnessMethod)) / totalWheel + spotOnWheel >= spin) {
                     currReproduce[i] = c;
                     double actual = (double) i / popSize;
                     if (actual > elitism / 100) {
-                        currReproduce[i].mutate(rate);
+                        currReproduce[i].mutate(rate, Math.random());
                     }
                     break;
                 }
@@ -220,7 +236,7 @@ public class Generation {
         chromosomeList.get(k).setGeneration(origGenes, k, fitnessMethod);
         double actual = (double) k / popSize;
         if (actual > elitism / 100.0) {
-            chromosomeList.get(k).mutate(rate);
+            chromosomeList.get(k).mutate(rate, Math.random());
         }
     }
 
@@ -357,7 +373,7 @@ public class Generation {
         return actualList;
     }
     //Makes an entire ordered list of the chromosomes in a generation
-
+    
     public void cross() {
         int[] currGenes = new int[chromosomeList.get(0).getGenes().length];
         int[] nextGenes = new int[chromosomeList.get(0).getGenes().length];
