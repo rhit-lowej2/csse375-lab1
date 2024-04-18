@@ -1,5 +1,9 @@
 package mainApp;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -28,6 +32,44 @@ public class Testing {
 	}
 
 	@Test
+	public void testMutate() {
+		ChromosomeComponent c = new ChromosomeComponent();
+		int[] genetics = new int[2];
+		genetics[0] = 0;
+		genetics[1] = 1;
+		c.setGenes(genetics);
+		c.mutate(.1, .2);
+		int[] result = c.getGenes();
+		assertEquals(0, result[0]);
+		assertEquals(1, result[1]);
+		c.mutate(.2, 0);
+		result = c.getGenes();
+		assertEquals(1, result[0]);
+		assertEquals(0, result[1]);
+	}
+
+	@Test
+	public void testRouletteWheelReproduce() {
+		ChromosomeComponent c1 = new ChromosomeComponent();
+		int[] genetics = new int[2];
+		genetics[0] = 0;
+		genetics[1] = 1;
+		c1.setGenes(genetics);
+		ChromosomeComponent c2 = new ChromosomeComponent();
+		c2.setGenes(genetics);
+		ChromosomeComponent[] survivors = new ChromosomeComponent[2];
+		survivors[0] = c1;
+		survivors[1] = c2;
+		Generation g = new Generation(survivors, new GenParams(.1, 2, "t", 1), new FakeFitnessMethod());
+		g.rouletteWheelReproduce(survivors, .1);
+		ArrayList<ChromosomeComponent> result = g.getList();
+		for(int i = 0; i < result.size(); i++) {
+			result.get(i).getGenes()[0] = 0;
+			result.get(i).getGenes()[1] = 1;
+		}
+	}
+
+	@Test
 	public void testUndo() {
 		ChromosomeComponent component = new ChromosomeComponent();
 		int[] genes = new int[100];
@@ -36,7 +78,7 @@ public class Testing {
 		}
 		component.setGenes(genes);
 		for (int i = 0; i < 50; i++) {
-			component.mutate(1.0);
+			component.mutate(1.0, Math.random());
 		}
 		for (int i = 0; i < 50; i++) {
 			component.undo();

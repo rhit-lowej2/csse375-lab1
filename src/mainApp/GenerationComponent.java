@@ -28,17 +28,12 @@ import javax.swing.JComponent;
 
 public class GenerationComponent extends JComponent {
 
-    protected ArrayList<Generation> generations = new ArrayList<Generation>();
-    protected ChromosomeComponent[] survivors;
-    protected double rate;
-    protected String method = "t";
-    protected double elitism;
-    protected int genSize;
+    private ArrayList<Generation> generations = new ArrayList<Generation>();
+    private ChromosomeComponent[] survivors;
+    private int genSize;
     private boolean isMax = false;
     private boolean onlyTop = false;
-    protected int popSize = 100;
-    protected boolean crossing;
-    private FitnessMethod fitnessMethod = new StringCompareFitnessMethod("Smiley");
+    private boolean crossing;
 
     public void drawGeneration(int currentGenerationIndex) {
         if (currentGenerationIndex < generations.size()) {
@@ -64,16 +59,10 @@ public class GenerationComponent extends JComponent {
     }
     //Tells the program to terminate at 100
 
-    public void randomize(double rate, String method, int genSize, int popSize, double elitism, FitnessMethod fitnessMethod) {
-        this.elitism = elitism;
-        this.method = method;
-        this.rate = rate;
+    public void randomize(int genSize, Generation g) {
         this.genSize = genSize;
-        this.popSize = popSize;
-        this.fitnessMethod = fitnessMethod;
-        Generation first = new Generation(null, new GenParams(rate, popSize, method, elitism), fitnessMethod);
-        generations.add(first);
-        first.drawOn(getGraphics());
+        generations.add(g);
+        g.drawOn(getGraphics());
         nextGen();
     }
     //Used for all selection methods, creates first generation and sets some parameters
@@ -84,13 +73,14 @@ public class GenerationComponent extends JComponent {
     //Sets crossver to true
 
     public void nextGen() {
+    	Generation lastGen = generations.get(generations.size()-1);
         for (int i = 1; i < genSize; i++) {
-            if (this.method.equals("t")) {
+            if (lastGen.getSelection().equals("t")) {
                 survivors = generations.get(i - 1).getBest();
             } else {
                 survivors = generations.get(i - 1).allOrdered();
             }
-            Generation newGen = new Generation(survivors, new GenParams(rate, popSize, method, elitism), fitnessMethod);
+            Generation newGen = new Generation(survivors, lastGen.getRate(), lastGen.getPopSize(), lastGen.getSelection(), lastGen.getElitism(), lastGen.getFitMethod());
             generations.add(newGen);
             if (crossing == true) {
                 generations.get(i).cross();

@@ -41,7 +41,7 @@ public class GraphViewer {
 
     private Timer t;
     private boolean progRunning = false;
-    private  int DELAY = 5;
+    private static final int DELAY = 5;
 
     private int currentGenerationIndex = 0;
 
@@ -165,27 +165,20 @@ public class GraphViewer {
                 if (terminate.isSelected()) {
                     genComp.term();
                 }
+                String selection = "";
                 if (this.currSelection.charAt(0) == 't') {
-                    graphComp.randomize(this.rate, this.popSize, this.genSize,
-                            Double.parseDouble(eliteRate.getText()), fitnessMethod);
-                    genComp.randomize(this.rate, "t", this.genSize, this.popSize,
-                            Double.parseDouble(eliteRate.getText()), fitnessMethod);
+                	graphComp.clear();
+                	selection = "t";
                 } else if (this.currSelection.charAt(1) == 'o') {
-                    graphComp.roulette(this.rate, this.popSize, this.genSize,
-                            Double.parseDouble(eliteRate.getText()), fitnessMethod);
-                    genComp.randomize(this.rate, "ro", this.genSize, this.popSize,
-                            Double.parseDouble(eliteRate.getText()), fitnessMethod);
+                	selection = "ro";
                 } else if (this.currSelection.charAt(1) == 'a') {
-                    graphComp.ranking(this.rate, this.popSize, this.genSize,
-                            Double.parseDouble(eliteRate.getText()), fitnessMethod);
-                    genComp.randomize(this.rate, "la", this.genSize, this.popSize,
-                            Double.parseDouble(eliteRate.getText()), fitnessMethod);
+                	selection = "la";
                 } else if (this.currSelection.charAt(0) == 'M') {
-                    System.out.println(currSelection);
-                    StringCompareFitnessMethod debug = new StringCompareFitnessMethod(FitnessMethod.GREEN);
-                    debug.setDebug(true);
-                    graphComp.dancingQueen(this.popSize, this.genSize, debug);
+                    selection = "d";
                 }
+                Generation g = new Generation(null, new GenParams(this.rate, this.popSize, selection, Double.parseDouble(eliteRate.getText())), fitnessMethod);
+                graphComp.addGeneration(g,  this.genSize);
+                genComp.randomize(this.genSize, g);
                 graphComp.nextGen();
                 t.start();
 

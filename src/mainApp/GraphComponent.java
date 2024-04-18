@@ -22,37 +22,30 @@ public class GraphComponent extends JComponent {
 
     private ArrayList<Generation> generations = new ArrayList<Generation>();
     private ChromosomeComponent[] survivors;
-    private double rate;
-    private int popSize;
     private int genSize;
     private static int DELAY = 20;
     private Timer t;
     private static int genIndex = 0;
     private boolean isDrawing = true;
     private String method = "t";
-    private double elitism = 0;
     private boolean crossMe = false;
-    private FitnessMethod fitMethod = new StringCompareFitnessMethod("Smiley");
     private boolean endMax = false;
 
-    private  Color COLOR_BEST = Color.GREEN;
-    private  Color COLOR_AVERAGE = Color.BLUE;
-    private  Color COLOR_WORST = Color.RED;
-    private  Color COLOR_HAM = Color.YELLOW;
-    private  Color COLOR_CORRECT = Color.MAGENTA;
-    private  Color COLOR_INCORRECT = Color.PINK;
-    private  Color COLOR_UNDECIDED = Color.GRAY;
+    private static final Color COLOR_BEST = Color.GREEN;
+    private static final Color COLOR_AVERAGE = Color.BLUE;
+    private static final Color COLOR_WORST = Color.RED;
+    private static final Color COLOR_HAM = Color.YELLOW;
+    private static final Color COLOR_CORRECT = Color.MAGENTA;
+    private static final Color COLOR_INCORRECT = Color.PINK;
+    private static final Color COLOR_UNDECIDED = Color.GRAY;
 
     public void toggleDrawing(boolean state) {
         isDrawing = state;
     }
     //Tell the component whether it is currently drawing itself or not
 
-    public void compProp(double rate, int popSize, int genSize, FitnessMethod fitMethod) {
-        this.rate = rate;
-        this.popSize = popSize;
+    public void compProp(double rate, int popSize, int genSize, String fitMethod) {
         this.genSize = genSize;
-        this.fitMethod = fitMethod;
     }
     //Set basic instance variables
 
@@ -129,17 +122,13 @@ public class GraphComponent extends JComponent {
 
 
     private void drawNums(Graphics g2, int index) {
+    	int popSize = generations.get(generations.size()-1).getPopSize();
         g2.setColor(Color.BLACK);
         int x1 = calcX(index);
         int x2 = calcX(index - 1);
-//        int[] y1s = generations.get(index).get1s();
-//        int[] y2s = generations.get(index - 1).get1s();
         int total1 = generations.get(index).getInfo().totalOnes();
         int total2 = generations.get(index - 1).getInfo().totalOnes();
-//        for (int i = 0; i < y1s.length; i++) {
-//            total1 += y1s[i];
-//            total2 += y2s[i];
-//        }
+
         double y1 = (total1 * 1.0 / (popSize * 20));
         double y2 = (total2 * 1.0 / (popSize * 20));
         y1 *= 100;
@@ -149,12 +138,7 @@ public class GraphComponent extends JComponent {
         g2.setColor(Color.GREEN);
         total1 = generations.get(index).getInfo().totalZeros();
         total2 = generations.get(index - 1).getInfo().totalZeros();
-//        y1s = generations.get(index).get0s();
-//        y2s = generations.get(index - 1).get0s();
-//        for (int i = 0; i < y1s.length; i++) {
-//            total1 += y1s[i];
-//            total2 += y2s[i];
-//        }
+
         y1 = (total1 * 1.0 / (popSize * 20));
         y2 = (total2 * 1.0 / (popSize * 20));
         y1 *= 100;
@@ -164,12 +148,7 @@ public class GraphComponent extends JComponent {
         g2.setColor(Color.ORANGE);
         total1 = generations.get(index).getInfo().totalTwos();
         total2 = generations.get(index - 1).getInfo().totalTwos();
-//        y1s = generations.get(index).get2s();
-//        y2s = generations.get(index - 1).get2s();
-//        for (int i = 0; i < y1s.length; i++) {
-//            total1 += y1s[i];
-//            total2 += y2s[i];
-//        }
+
         y1 = (total1 * 1.0 / (popSize * 20));
         y2 = (total2 * 1.0 / (popSize * 20));
         y1 *= 100;
@@ -293,58 +272,13 @@ public class GraphComponent extends JComponent {
     }
     //Tells the program to terminate at 100
 
-    public void dancingQueen(int popSize, int genSize, FitnessMethod fitMethod) {
-        this.fitMethod = fitMethod;
-        this.elitism = 0;
-        this.rate = 0;
-        this.method = "d";
-        this.popSize = popSize;
-        this.genSize = genSize;
-        Generation first = new Generation(null, new GenParams(rate, popSize, method, elitism), fitMethod);
-        generations.add(first);
-        repaint();
+    public void addGeneration(Generation g, int genSize) {
+    	this.genSize = genSize;
+    	this.method = g.getSelection();
+    	generations.add(g);
+    	repaint();
     }
-    // Used for milestone 4, creates first generation and sets some parameters
 
-    public void randomize(double mutateRate, int popSize, int genSize, double elitism, FitnessMethod fitMethod) {
-        this.fitMethod = fitMethod;
-        this.elitism = elitism;
-        this.rate = mutateRate;
-        this.popSize = popSize;
-        this.genSize = genSize;
-
-        generations.clear();
-        Generation first = new Generation(null, new GenParams(rate, popSize, method, elitism), fitMethod);
-        generations.add(first);
-        repaint();
-    }
-    //Used for truncation, creates first generation and sets some parameters
-
-    public void roulette(double mutateRate, int popSize, int genSize, double elitism, FitnessMethod fitMethod) {
-        this.fitMethod = fitMethod;
-        this.elitism = elitism;
-        this.method = "ro";
-        this.rate = mutateRate;
-        this.popSize = popSize;
-        this.genSize = genSize;
-        Generation first = new Generation(null, new GenParams(rate, popSize, method, elitism), fitMethod);
-        generations.add(first);
-        repaint();
-    }
-    //Used for roulette wheel, creates first generation and sets some parameters
-
-    public void ranking(double mutateRate, int popSize, int genSize, double elitism, FitnessMethod fitMethod) {
-        this.fitMethod = fitMethod;
-        this.elitism = elitism;
-        this.method = "la";
-        this.rate = mutateRate;
-        this.popSize = popSize;
-        this.genSize = genSize;
-        Generation firstOne = new Generation(null, new GenParams(rate, popSize, method, elitism), fitMethod);
-        generations.add(firstOne);
-        repaint();
-    }
-    //Used for ranking selection, creates first generation and sets some parameters
     public void nextGen() {
 
         for (int i = 1; i < genSize; i++) {
@@ -353,7 +287,9 @@ public class GraphComponent extends JComponent {
             } else {
                 survivors = generations.get(i - 1).allOrdered();
             }
-            Generation newGen = new Generation(survivors, new GenParams(rate, popSize, this.method, elitism), fitMethod);
+            Generation lastGen = generations.get(generations.size()-1);
+            Generation newGen = new Generation(survivors, new GenParams(lastGen.getRate(), lastGen.getPopSize(), this.method,
+                    lastGen.getElitism()), lastGen.getFitMethod());
             generations.add(newGen);
             if (crossMe == true) {
                 int total = 0;
