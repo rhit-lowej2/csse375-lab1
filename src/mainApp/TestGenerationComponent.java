@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestGenerationComponent extends GenerationComponent {
+    private double elitism;
+    private String method;
+    private int genSize;
+    private int popSize;
+    private double rate;
     private FitnessMethod fitnessMethod = new FakeFitnessMethod();
 
     public TestGenerationComponent() {
     }
 
-    @Override
     public void randomize(double rate, String method, int genSize, int popSize, double elitism, FitnessMethod fitnessMethod) {
         this.elitism = elitism;
         this.method = method;

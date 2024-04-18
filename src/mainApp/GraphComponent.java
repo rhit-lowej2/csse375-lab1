@@ -44,7 +44,7 @@ public class GraphComponent extends JComponent {
     }
     //Tell the component whether it is currently drawing itself or not
 
-    public void compProp(double rate, int popSize, int genSize, String fitMethod) {
+    public void compProp(double rate, int popSize, int genSize, FitnessMethod fitMethod) {
         this.genSize = genSize;
     }
     //Set basic instance variables

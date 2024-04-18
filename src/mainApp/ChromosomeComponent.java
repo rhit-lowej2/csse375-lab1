@@ -110,7 +110,7 @@ public class ChromosomeComponent extends JComponent {
         saveState();
         this.rate = rate / 100; // Turn rate to a percentage
         for (Chromosome chromosome : chromosomes) {
-            if (random < this.rate) { // If the mutate rate is higher than the random number, switch gene
+            if (Math.random() < this.rate) { // If the mutate rate is higher than the random number, switch gene
                 if (chromosome.getNum() == 1) {
                     chromosome.color = Color.BLACK;
                     chromosome.setNum(0);

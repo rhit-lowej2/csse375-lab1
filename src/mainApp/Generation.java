@@ -44,8 +44,8 @@ public class Generation {
     public double getElitism() {
     	return params.elitism;
     }
-    public String getFitMethod() {
-    	return fitnessMethod.toString();
+    public FitnessMethod getFitMethod() {
+    	return fitnessMethod;
     }
     public String getSelection() {
     	return params.selection;
@@ -53,7 +53,8 @@ public class Generation {
 
     public Generation(ChromosomeComponent[] survivors, GenParams params, FitnessMethod fitnessMethod) {
         this.params = params;
-        currReproduce = new ChromosomeComponent[params.popSize];
+        this.origGenes = new int[params.geneSize];
+        this.currReproduce = new ChromosomeComponent[params.popSize];
         this.fitnessMethod = fitnessMethod;
         this.chromosomeList = new ArrayList<ChromosomeComponent>();
         if (survivors == null) {

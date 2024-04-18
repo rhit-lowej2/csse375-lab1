@@ -28,8 +28,8 @@ import javax.swing.JComponent;
 
 public class GenerationComponent extends JComponent {
 
-    private ArrayList<Generation> generations = new ArrayList<Generation>();
-    private ChromosomeComponent[] survivors;
+    protected ArrayList<Generation> generations = new ArrayList<Generation>();
+    protected ChromosomeComponent[] survivors;
     private int genSize;
     private boolean isMax = false;
     private boolean onlyTop = false;
@@ -80,7 +80,7 @@ public class GenerationComponent extends JComponent {
             } else {
                 survivors = generations.get(i - 1).allOrdered();
             }
-            Generation newGen = new Generation(survivors, lastGen.getRate(), lastGen.getPopSize(), lastGen.getSelection(), lastGen.getElitism(), lastGen.getFitMethod());
+            Generation newGen = new Generation(survivors,new GenParams(lastGen.getRate(), lastGen.getPopSize(), lastGen.getSelection(), lastGen.getElitism()), lastGen.getFitMethod());
             generations.add(newGen);
             if (crossing == true) {
                 generations.get(i).cross();
