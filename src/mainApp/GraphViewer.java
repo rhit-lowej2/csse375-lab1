@@ -41,13 +41,15 @@ public class GraphViewer {
     private GraphComponent graphComp = new GraphComponent();
     private GenerationComponent genComp = new GenerationComponent();
     private String currSelection = "truncation";
-    private String fitnessMethod = "Smiley";
+    private Clock clock = new Clock();
+    private FitnessMethodFactory factory = new FitnessMethodFactory();
+    private FitnessMethod fitnessMethod = factory.getFitnessMethod("Smiley");
     JFrame frame;
     JFrame genFrame;
     JPanel panel = new JPanel();
 
     JTextField rateField;
-    
+
     private void graphViewerMain() {
 
         this.t = new Timer(DELAY, new ActionListener() {
@@ -131,7 +133,6 @@ public class GraphViewer {
         String[] fitnesses = { "Smiley", "Slime", "All Green", "Jack", "twenty 1s", "Clock", "All", "miniJack" };
         JComboBox<String> fitDrop = new JComboBox<String>(fitnesses);
 
-
         panel.add(start);
         panel.add(close);
         panel.add(clear);
@@ -151,7 +152,8 @@ public class GraphViewer {
                 this.rate = getRate();
                 this.popSize = Integer.parseInt(popSize.getText());
                 this.genSize = Integer.parseInt(genSize.getText());
-                this.fitnessMethod = "" + fitDrop.getSelectedItem();
+                this.fitnessMethod = factory.getFitnessMethod("" + fitDrop.getSelectedItem());
+                this.fitnessMethod.setClock(clock);
                 validateInputs(frame);
                 if (this.genSize < 10) {
                     throw new IllegalArgumentException("Please enter 10 or more generations");
@@ -182,7 +184,7 @@ public class GraphViewer {
                 } else if (this.currSelection.charAt(0) == 'M') {
                     selection = "d";
                 }
-                Generation g = new Generation(null, this.rate, this.popSize, selection, Double.parseDouble(eliteRate.getText()), fitnessMethod);
+                Generation g = new Generation(null, new GenParams(this.rate, this.popSize, selection, Double.parseDouble(eliteRate.getText())), fitnessMethod);
                 graphComp.addGeneration(g,  this.genSize);
                 genComp.randomize(this.genSize, g);
                 graphComp.nextGen();
@@ -225,7 +227,7 @@ public class GraphViewer {
         panel.add(textField);
         return textField;
     }
-
+    
     public static void main(String[] args) {
         GraphViewer viewer = new GraphViewer();
     }

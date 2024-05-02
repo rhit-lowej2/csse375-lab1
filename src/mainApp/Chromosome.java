@@ -40,7 +40,11 @@ public class Chromosome {
         this.actualX = initialX + index % 10 * width;
         this.actualY = initialY + (index / 10) * width;
     }
-
+    public Chromosome copy() {
+        Chromosome c = new Chromosome(num, 0, width, actualX, actualY);
+        c.color = color;
+        return c;
+    }
     public void swapColor(int x, int y) {
         if (x > actualX && x < actualX + width && y > actualY && y < actualY + width) {
             System.out.println(color);
@@ -54,7 +58,6 @@ public class Chromosome {
                 Rectangle rect = new Rectangle(this.actualX, this.actualY, width, width);
                 g2.setColor(color);
                 g2.fill(rect);
-                System.out.println("here");
             }
         }
     }

@@ -44,7 +44,7 @@ public class GraphComponent extends JComponent {
     }
     //Tell the component whether it is currently drawing itself or not
 
-    public void compProp(double rate, int popSize, int genSize, String fitMethod) {
+    public void compProp(double rate, int popSize, int genSize, FitnessMethod fitMethod) {
         this.genSize = genSize;
     }
     //Set basic instance variables
@@ -126,14 +126,9 @@ public class GraphComponent extends JComponent {
         g2.setColor(Color.BLACK);
         int x1 = calcX(index);
         int x2 = calcX(index - 1);
-        int[] y1s = generations.get(index).get1s();
-        int[] y2s = generations.get(index - 1).get1s();
-        int total1 = 0;
-        int total2 = 0;
-        for (int i = 0; i < y1s.length; i++) {
-            total1 += y1s[i];
-            total2 += y2s[i];
-        }
+        int total1 = generations.get(index).getInfo().totalOnes();
+        int total2 = generations.get(index - 1).getInfo().totalOnes();
+
         double y1 = (total1 * 1.0 / (popSize * 20));
         double y2 = (total2 * 1.0 / (popSize * 20));
         y1 *= 100;
@@ -141,14 +136,9 @@ public class GraphComponent extends JComponent {
         g2.drawLine(x1, calcY((int) y1), x2, calcY((int) y2));
 
         g2.setColor(Color.GREEN);
-        total1 = 0;
-        total2 = 0;
-        y1s = generations.get(index).get0s();
-        y2s = generations.get(index - 1).get0s();
-        for (int i = 0; i < y1s.length; i++) {
-            total1 += y1s[i];
-            total2 += y2s[i];
-        }
+        total1 = generations.get(index).getInfo().totalZeros();
+        total2 = generations.get(index - 1).getInfo().totalZeros();
+
         y1 = (total1 * 1.0 / (popSize * 20));
         y2 = (total2 * 1.0 / (popSize * 20));
         y1 *= 100;
@@ -156,14 +146,9 @@ public class GraphComponent extends JComponent {
         g2.drawLine(x1, calcY((int) y1), x2, calcY((int) y2));
 
         g2.setColor(Color.ORANGE);
-        total1 = 0;
-        total2 = 0;
-        y1s = generations.get(index).get2s();
-        y2s = generations.get(index - 1).get2s();
-        for (int i = 0; i < y1s.length; i++) {
-            total1 += y1s[i];
-            total2 += y2s[i];
-        }
+        total1 = generations.get(index).getInfo().totalTwos();
+        total2 = generations.get(index - 1).getInfo().totalTwos();
+
         y1 = (total1 * 1.0 / (popSize * 20));
         y2 = (total2 * 1.0 / (popSize * 20));
         y1 *= 100;
@@ -293,7 +278,7 @@ public class GraphComponent extends JComponent {
     	generations.add(g);
     	repaint();
     }
-    
+
     public void nextGen() {
 
         for (int i = 1; i < genSize; i++) {
@@ -303,8 +288,8 @@ public class GraphComponent extends JComponent {
                 survivors = generations.get(i - 1).allOrdered();
             }
             Generation lastGen = generations.get(generations.size()-1);
-            Generation newGen = new Generation(survivors, lastGen.getRate(), lastGen.getPopSize(), this.method,
-                    lastGen.getElitism(), lastGen.getFitMethod());
+            Generation newGen = new Generation(survivors, new GenParams(lastGen.getRate(), lastGen.getPopSize(), this.method,
+                    lastGen.getElitism()), lastGen.getFitMethod());
             generations.add(newGen);
             if (crossMe == true) {
                 int total = 0;

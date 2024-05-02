@@ -49,12 +49,14 @@ public class ChromosomeViewer {
 		JButton load = new JButton("Load");
 		JButton save = new JButton("Save");
 		JButton mutate = new JButton("Mutate");
+		JButton undo = new JButton("Undo");
 		JTextField input = new JTextField(5);
 		alpha.setSize(500.0, 500.0);
 		frame.setSize(alpha);
 		panel.add(load);
 		panel.add(save);
 		panel.add(mutate);
+		panel.add(undo);
 		panel.add(input);
 
 		frame.add(panel, BorderLayout.SOUTH);
@@ -79,6 +81,13 @@ public class ChromosomeViewer {
 				broke.printStackTrace();
 			}
 		});
+		undo.addActionListener((e) -> {
+			try {
+				chromosomeComp.undo();
+			} catch (Exception ex) {
+				System.out.println("Error : couldn't undo");
+			}
+		});
 
 		chromosomeComp.addMouseListener(clicker);
 
@@ -93,7 +102,7 @@ public class ChromosomeViewer {
 
 	}
 
-	private static final int DELAY = 50;
+	private  int DELAY = 50;
 	Timer t = new Timer(DELAY, new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
