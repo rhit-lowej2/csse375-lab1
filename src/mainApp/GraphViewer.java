@@ -1,13 +1,6 @@
 package mainApp;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.Timer;
+import javax.swing.*;
 
 import java.awt.event.ActionEvent;
 
@@ -52,6 +45,8 @@ public class GraphViewer {
     JFrame frame;
     JFrame genFrame;
     JPanel panel = new JPanel();
+
+    JTextField rateField;
     
     private void graphViewerMain() {
 
@@ -102,14 +97,26 @@ public class GraphViewer {
         frame.add(panel, BorderLayout.SOUTH);
 
         JTextField eliteRate = makeLabel("Elitism%", 3, "1");
-
-        JTextField rate = makeLabel("Mutate rate: ", 5, "1");
+        eliteRate.setToolTipText("Elitism: N% (Enter a numeric value between 0 and 100)");
+        rateField = makeLabel("Mutate rate: ", 5, "1");
+        rateField.setToolTipText("Mutate Rate: N% (Enter a numeric value between 0 and 100)");
 
         JTextField popSize = makeLabel("Population Size: ", 5, "100");
-
+        popSize.setToolTipText("Enter an integer > 0");
         JTextField genSize = makeLabel("Generations: ", 5, "150");
+        genSize.setToolTipText("Enter an integer > 10");
 
         JButton clear = new JButton("Clear");
+        clear.setToolTipText("Clears the graph");
+
+        JButton help = new JButton("Help");
+        help.addActionListener((e) -> {
+            JOptionPane.showMessageDialog(frame,
+                    "Elitism: what percent of the population is included directly in the next generation\n" +
+                    "Mutation Rate: the chance of each cell being mutated\n" +
+                    "Population Size: how large the entire population is\n" +
+                    "Generations: # of generations to run\n");
+        });
         this.t = new Timer(DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -124,6 +131,7 @@ public class GraphViewer {
         String[] fitnesses = { "Smiley", "Slime", "All Green", "Jack", "twenty 1s", "Clock", "All", "miniJack" };
         JComboBox<String> fitDrop = new JComboBox<String>(fitnesses);
 
+
         panel.add(start);
         panel.add(close);
         panel.add(clear);
@@ -131,6 +139,7 @@ public class GraphViewer {
         panel.add(crossover);
         panel.add(terminate);
         panel.add(fitDrop);
+        panel.add(help);
         dimension.setSize(1300.0, 800.0);
         frame.setSize(dimension);
         genFrame.setVisible(true);
@@ -139,11 +148,11 @@ public class GraphViewer {
             genFrame.setVisible(true);
             try {
                 this.currSelection = "" + dropdown.getSelectedItem();
-                this.rate = Double.parseDouble(rate.getText());
+                this.rate = getRate();
                 this.popSize = Integer.parseInt(popSize.getText());
                 this.genSize = Integer.parseInt(genSize.getText());
                 this.fitnessMethod = "" + fitDrop.getSelectedItem();
-
+                validateInputs(frame);
                 if (this.genSize < 10) {
                     throw new IllegalArgumentException("Please enter 10 or more generations");
                 }
@@ -188,7 +197,26 @@ public class GraphViewer {
         //Listen for start
 
     }
-
+    public Double getRate() {
+        return Double.parseDouble(rateField.getText());
+    }
+    public void validateInputs(JFrame frame) {
+        StringBuilder sb = new StringBuilder();
+        if (this.rate < 0 || this.rate > 100) {
+            sb.append("mutation rate should be a numeric value between 0 and 100\n");
+        }
+        if (this.popSize < 1) {
+            sb.append("population should be at least 1\n");
+        }
+        if (this.genSize < 10){
+            sb.append("generation size should be at least 10\n");
+        }
+        if (sb.toString().equals("")) {
+            return;
+        }
+        JOptionPane.showMessageDialog(frame, sb.toString());
+        throw new NumberFormatException();
+    }
     public JTextField makeLabel(String labelText, int textFieldNum, String text) {
         JLabel label = new JLabel(labelText);
         JTextField textField = new JTextField(textFieldNum);
@@ -197,7 +225,7 @@ public class GraphViewer {
         panel.add(textField);
         return textField;
     }
-    
+
     public static void main(String[] args) {
         GraphViewer viewer = new GraphViewer();
     }

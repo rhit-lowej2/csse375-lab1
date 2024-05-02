@@ -1,10 +1,6 @@
 package mainApp;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.Timer;
+import javax.swing.*;
 
 import java.awt.event.ActionEvent;
 
@@ -64,16 +60,22 @@ public class ChromosomeViewer {
 		frame.add(panel, BorderLayout.SOUTH);
 
 		input.setText("1.0");
-		input.setToolTipText("Mutate Rate: N%");
+		input.setToolTipText("Mutate Rate: N% (Enter a numeric value between 0 and 100)");
 
 		ButtonListener forced = new ButtonListener(chromosomeComp, "Load");
 		load.addActionListener(forced);
 		forced.actionPerformed(null);
 		mutate.addActionListener((e) -> {
 			try {
-				chromosomeComp.mutate(Double.parseDouble(input.getText()), Math.random());
+				double d = Double.parseDouble(input.getText());
+				if (d > 100 || d < 0) {
+					JOptionPane.showMessageDialog(frame, "Mutation rate must be a numeric value between 0 and 100");
+				}
+				else {
+					chromosomeComp.mutate(Double.parseDouble(input.getText()), Math.random());
+				}
 			} catch (NumberFormatException broke) {
-				System.out.println("Error : please enter a double value");
+				JOptionPane.showMessageDialog(frame, "Mutation rate must be a numeric value between 0 and 100");
 				broke.printStackTrace();
 			}
 		});
