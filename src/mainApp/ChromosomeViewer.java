@@ -1,10 +1,6 @@
 package mainApp;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.Timer;
+import javax.swing.*;
 
 import java.awt.event.ActionEvent;
 
@@ -53,28 +49,43 @@ public class ChromosomeViewer {
 		JButton load = new JButton("Load");
 		JButton save = new JButton("Save");
 		JButton mutate = new JButton("Mutate");
+		JButton undo = new JButton("Undo");
 		JTextField input = new JTextField(5);
 		alpha.setSize(500.0, 500.0);
 		frame.setSize(alpha);
 		panel.add(load);
 		panel.add(save);
 		panel.add(mutate);
+		panel.add(undo);
 		panel.add(input);
 
 		frame.add(panel, BorderLayout.SOUTH);
 
 		input.setText("1.0");
-		input.setToolTipText("Mutate Rate: N%");
+		input.setToolTipText("Mutate Rate: N% (Enter a numeric value between 0 and 100)");
 
 		ButtonListener forced = new ButtonListener(chromosomeComp, "Load");
 		load.addActionListener(forced);
 		forced.actionPerformed(null);
 		mutate.addActionListener((e) -> {
 			try {
-				chromosomeComp.mutate(Double.parseDouble(input.getText()), Math.random());
+				double d = Double.parseDouble(input.getText());
+				if (d > 100 || d < 0) {
+					JOptionPane.showMessageDialog(frame, "Mutation rate must be a numeric value between 0 and 100");
+				}
+				else {
+					chromosomeComp.mutate(Double.parseDouble(input.getText()), Math.random());
+				}
 			} catch (NumberFormatException broke) {
-				System.out.println("Error : please enter a double value");
+				JOptionPane.showMessageDialog(frame, "Mutation rate must be a numeric value between 0 and 100");
 				broke.printStackTrace();
+			}
+		});
+		undo.addActionListener((e) -> {
+			try {
+				chromosomeComp.undo();
+			} catch (Exception ex) {
+				System.out.println("Error : couldn't undo");
 			}
 		});
 
@@ -91,7 +102,7 @@ public class ChromosomeViewer {
 
 	}
 
-	private static final int DELAY = 50;
+	private  int DELAY = 50;
 	Timer t = new Timer(DELAY, new ActionListener() {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {

@@ -1,13 +1,6 @@
 package mainApp;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.Timer;
+import javax.swing.*;
 
 import java.awt.event.ActionEvent;
 
@@ -29,12 +22,9 @@ import java.awt.event.ActionListener;
 public class GraphViewer {
 	
 	public GraphViewer() {
-		graphViewerMain();
 	}
 
     Dimension dimension = new Dimension();
-    private double rate = 0.5;
-    private int popSize;
     private int genSize;
     private JButton start;
     private JButton close;
@@ -48,12 +38,19 @@ public class GraphViewer {
     private GraphComponent graphComp = new GraphComponent();
     private GenerationComponent genComp = new GenerationComponent();
     private String currSelection = "truncation";
-    private String fitnessMethod = "Smiley";
+    private Clock clock = new Clock();
+    private FitnessMethodFactory factory = new FitnessMethodFactory();
+    private FitnessMethod fitnessMethod = factory.getFitnessMethod("Smiley");
     JFrame frame;
     JFrame genFrame;
     JPanel panel = new JPanel();
-    
-    private void graphViewerMain() {
+
+    JTextField rateField, eliteRateField, popSizeField, genSizeField;
+    JCheckBox crossover, terminate;
+    JComboBox<String> dropdown, fitDrop;
+    int errorCount = 0;
+
+    public void run() {
 
         this.t = new Timer(DELAY, new ActionListener() {
             @Override
@@ -84,12 +81,12 @@ public class GraphViewer {
         //Start timer
 
         this.frame = new JFrame();
-        this.genFrame = new JFrame();
+        genFrame = new JFrame();
         this.start = new JButton("Start");
         this.close = new JButton("Close");
 
-        JCheckBox crossover = new JCheckBox("Crossover");
-        JCheckBox terminate = new JCheckBox("Terminate");
+        crossover = new JCheckBox("Crossover");
+        terminate = new JCheckBox("Terminate");
         genFrame.setSize(1000, 700);
         genFrame.setTitle("Generation frame");
         genFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,15 +98,27 @@ public class GraphViewer {
         frame.add(graphComp);
         frame.add(panel, BorderLayout.SOUTH);
 
-        JTextField eliteRate = makeLabel("Elitism%", 3, "1");
+        eliteRateField = makeLabel("Elitism%", 3, "1");
+        eliteRateField.setToolTipText("Elitism: N% (Enter a numeric value between 0 and 100)");
+        rateField = makeLabel("Mutate rate: ", 5, "1");
+        rateField.setToolTipText("Mutate Rate: N% (Enter a numeric value between 0 and 100)");
 
-        JTextField rate = makeLabel("Mutate rate: ", 5, "1");
-
-        JTextField popSize = makeLabel("Population Size: ", 5, "100");
-
-        JTextField genSize = makeLabel("Generations: ", 5, "150");
+        popSizeField = makeLabel("Population Size: ", 5, "100");
+        popSizeField.setToolTipText("Enter an integer > 0");
+        genSizeField = makeLabel("Generations: ", 5, "150");
+        genSizeField.setToolTipText("Enter an integer > 10");
 
         JButton clear = new JButton("Clear");
+        clear.setToolTipText("Clears the graph");
+
+        JButton help = new JButton("Help");
+        help.addActionListener((e) -> {
+            JOptionPane.showMessageDialog(frame,
+                    "Elitism: what percent of the population is included directly in the next generation\n" +
+                    "Mutation Rate: the chance of each cell being mutated\n" +
+                    "Population Size: how large the entire population is\n" +
+                    "Generations: # of generations to run\n");
+        });
         this.t = new Timer(DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -120,9 +129,9 @@ public class GraphViewer {
         });
 
         String[] selections = { "truncation", "Roulette Wheel", "Rank", "Milestone 4" };
-        JComboBox<String> dropdown = new JComboBox<String>(selections);
+        dropdown = new JComboBox<String>(selections);
         String[] fitnesses = { "Smiley", "Slime", "All Green", "Jack", "twenty 1s", "Clock", "All", "miniJack" };
-        JComboBox<String> fitDrop = new JComboBox<String>(fitnesses);
+        fitDrop = new JComboBox<String>(fitnesses);
 
         panel.add(start);
         panel.add(close);
@@ -131,64 +140,100 @@ public class GraphViewer {
         panel.add(crossover);
         panel.add(terminate);
         panel.add(fitDrop);
+        panel.add(help);
         dimension.setSize(1300.0, 800.0);
         frame.setSize(dimension);
         genFrame.setVisible(true);
 
         start.addActionListener((e) -> {
             genFrame.setVisible(true);
-            try {
-                this.currSelection = "" + dropdown.getSelectedItem();
-                this.rate = Double.parseDouble(rate.getText());
-                this.popSize = Integer.parseInt(popSize.getText());
-                this.genSize = Integer.parseInt(genSize.getText());
-                this.fitnessMethod = "" + fitDrop.getSelectedItem();
-
-                if (this.genSize < 10) {
-                    throw new IllegalArgumentException("Please enter 10 or more generations");
-                }
-                graphComp.compProp(this.rate, this.popSize, this.genSize, fitnessMethod);
-                graphComp.startDrawing();
-
-                if (crossover.isSelected()) {
-                    genComp.cross();
-                    graphComp.crossover();
-                }
-
-                if (!progRunning) {
-                    progRunning = true;
-                }
-
-                if (terminate.isSelected()) {
-                    genComp.term();
-                }
-                String selection = "";
-                if (this.currSelection.charAt(0) == 't') {
-                	graphComp.clear();
-                	selection = "t";
-                } else if (this.currSelection.charAt(1) == 'o') {
-                	selection = "ro";
-                } else if (this.currSelection.charAt(1) == 'a') {
-                	selection = "la";
-                } else if (this.currSelection.charAt(0) == 'M') {
-                    selection = "d";
-                }
-                Generation g = new Generation(null, this.rate, this.popSize, selection, Double.parseDouble(eliteRate.getText()), fitnessMethod);
-                graphComp.addGeneration(g,  this.genSize);
-                genComp.randomize(this.genSize, g);
-                graphComp.nextGen();
-                t.start();
-
-            } catch (NumberFormatException ex) {
-                System.out.println("Invalid input");
-            }
-            currentGenerationIndex = 0;
+            startButtonPressed(e);
             t.restart();
         });
         //Listen for start
 
     }
 
+    public void startButtonPressed(ActionEvent e) {
+        try {
+            this.currSelection = "" + dropdown.getSelectedItem();
+            this.genSize = getGenSize();
+            this.fitnessMethod = factory.getFitnessMethod("" + fitDrop.getSelectedItem());
+            this.fitnessMethod.setClock(clock);
+            GenParams params = getParams();
+            validateInputs(frame, params, genSize);
+            if (this.genSize < 10) {
+                throw new IllegalArgumentException("Please enter 10 or more generations");
+            }
+            graphComp.compProp(params.rate, params.popSize, this.genSize, fitnessMethod);
+            graphComp.startDrawing();
+
+            if (crossover.isSelected()) {
+                genComp.cross();
+                graphComp.crossover();
+            }
+
+            if (!progRunning) {
+                progRunning = true;
+            }
+
+            if (terminate.isSelected()) {
+                genComp.term();
+            }
+            Generation g = new Generation(null, getParams(), fitnessMethod);
+            graphComp.addGeneration(g,  this.genSize);
+            genComp.randomize(this.genSize, g);
+            graphComp.nextGen();
+            t.start();
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(frame, "All inputs should be valid numbers");
+            errorCount++;
+        } catch (Exception ex) {
+            errorCount++;
+//            System.out.println("custom error should be displayed");
+        }
+        currentGenerationIndex = 0;
+    }
+    public int getGenSize() throws NumberFormatException {
+        return Integer.parseInt(genSizeField.getText());
+    }
+
+    public GenParams getParams() {
+        String selection = "";
+        if (this.currSelection.charAt(0) == 't') {
+            graphComp.clear();
+            selection = "t";
+        } else if (this.currSelection.charAt(1) == 'o') {
+            selection = "ro";
+        } else if (this.currSelection.charAt(1) == 'a') {
+            selection = "la";
+        } else if (this.currSelection.charAt(0) == 'M') {
+            selection = "d";
+        }
+        return new GenParams(Double.parseDouble(rateField.getText()),
+                Integer.parseInt(popSizeField.getText()),
+                selection,
+                Double.parseDouble(eliteRateField.getText()));
+
+    }
+    public void validateInputs(JFrame frame, GenParams params, int genSize) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        if (params.rate < 0 || params.rate > 100) {
+            sb.append("mutation rate should be a numeric value between 0 and 100\n");
+        }
+        if (params.popSize < 100) {
+            sb.append("population should be at least 100 \n");
+        }
+        if (genSize < 10){
+            sb.append("generation size should be at least 10\n");
+        }
+        if (sb.toString().equals("")) {
+            return;
+        }
+        JOptionPane.showMessageDialog(frame, sb.toString());
+        throw new Exception();
+    }
     public JTextField makeLabel(String labelText, int textFieldNum, String text) {
         JLabel label = new JLabel(labelText);
         JTextField textField = new JTextField(textFieldNum);
@@ -200,6 +245,7 @@ public class GraphViewer {
     
     public static void main(String[] args) {
         GraphViewer viewer = new GraphViewer();
+        viewer.run();
     }
     //Start the program
 }
