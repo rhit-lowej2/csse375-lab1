@@ -146,4 +146,20 @@ public class Testing {
 		comp.nextGen();
 		assertTrue(comp.getDebugOutput().toString().startsWith("[20.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0"));
 	}
+
+	@Test
+	public void testErrorHandling1() {
+		GraphViewer v = new TestGraphViewer(true);
+		v.run();
+		v.startButtonPressed(null);
+		assertEquals(v.errorCount, 1);
+	}
+
+	@Test
+	public void testErrorHandling2() {
+		GraphViewer v = new TestGraphViewer(false);
+		v.run();
+		v.startButtonPressed(null);
+		assertEquals(v.errorCount, 0);
+	}
 }

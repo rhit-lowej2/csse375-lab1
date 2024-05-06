@@ -26,6 +26,7 @@ public class HomeScreen {
         graphButton.addActionListener((e) -> {
         	frame.hide();
         	GraphViewer g = new GraphViewer();
+            g.run();
         });
         chromosomeButton.addActionListener((e) -> {
         	frame.hide();
